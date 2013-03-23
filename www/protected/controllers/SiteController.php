@@ -21,6 +21,7 @@ class SiteController extends Controller
 		);
 	}
 
+
 	/**
 	 * This is the default 'index' action that is invoked
 	 * when an action is not explicitly requested by users.
@@ -77,26 +78,36 @@ class SiteController extends Controller
 	 */
 	public function actionLogin()
 	{
-		$model=new LoginForm;
-
-		// if it is ajax validation request
-		if(isset($_POST['ajax']) && $_POST['ajax']==='login-form')
-		{
-			echo CActiveForm::validate($model);
-			Yii::app()->end();
-		}
+		$model=new RegisterForm('login');
 
 		// collect user input data
-		if(isset($_POST['LoginForm']))
+		if(isset($_POST['RegisterForm']))
 		{
-			$model->attributes=$_POST['LoginForm'];
+			$model->attributes=$_POST['RegisterForm'];
 			// validate user input and redirect to the previous page if valid
-			if($model->validate() && $model->login())
-				$this->redirect(Yii::app()->user->returnUrl);
+			if($model->validate() && $model->login($model->attributes))
+				$this->render('index');
 		}
 		// display the login form
 		$this->render('login',array('model'=>$model));
 	}
+	/**
+	**@author Degtyaruk A
+	** This action performs registration
+	*/
+	public function actionRegister(){
+		$model = new RegisterForm('register');
+		if(isset($_POST['RegisterForm']))
+		{
+			$model->attributes = $_POST['RegisterForm'];
+			if($model->validate())
+			{
+				$model->register($model->attributes);
+			}
+		}
+		$this->render('register', array('model'=>$model));
+	}
+
 
 	/**
 	 * Logs out the current user and redirect to homepage.
